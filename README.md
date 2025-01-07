@@ -81,7 +81,14 @@ make check
 ```
 
 ### Structure des Tests
-Les tests sont organisés par catégorie dans le répertoire `tests/`. Chaque catégorie contient des fichiers de tests dédiés à une fonctionnalité spécifique, comme les pipelines, les commandes simples, etc.
+**1. scriptTest.sh**
+Ce fichier est un exemple de script test qui inclut différentes constructions et fonctionnalités du shell.
+
+**2. testsuite.sh**
+Ce script est une suite de tests automatisée qui compare le comportement de 42sh avec celui de bash --posix
+
+**3. unittests.c**
+Ce fichier utilise la bibliothèque Criterion pour implémenter des tests unitaires approfondis.
 
 ---
 
