@@ -22,12 +22,6 @@ Ce document décrit comment configurer, utiliser et étendre **42sh**.
 ## Structure du Projet
 ```
 42sh/
-├── src/            # Code source principal
-│   ├── lexer.c     # Analyse lexicale
-│   ├── parser.c    # Analyse syntaxique
-│   ├── executor.c  # Exécution des commandes
-│   └── builtins/   # Implémentation des commandes built-in
-├── tests/          # Tests fonctionnels et unitaires
 ├── Makefile.am     # Fichier pour le système de build Autotools
 └── configure.ac    # Script de configuration
 ```
