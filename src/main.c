@@ -1,16 +1,16 @@
 #include "main.h"
-
+#include "io/io.h"
+#include "lexer/lexer.h"
 #include <stdio.h>
 
 int main(int argc, char **argv)
 {
-    if (argc != 2)
+    
+    struct token *tok;
+    while(tok = lexer(io(argc, argv)))
     {
-        fprintf(stderr, "Usage: %s <script_file>\n", argv[0]);
-        return 1;
+        printf("%s\n",tok->value);
     }
-
-    printf("Hello world!\n");
     return 0;
 }
 
