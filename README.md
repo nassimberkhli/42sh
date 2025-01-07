@@ -1,6 +1,3 @@
-Voici un exemple de fichier `README.md` basé sur le sujet **42sh** :
-
-```markdown
 # 42sh
 
 ## Description
