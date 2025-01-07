@@ -114,8 +114,11 @@ Les tests sont organisés par catégorie dans le répertoire `tests/`. Chaque ca
 
 ## Contributeurs
 - **Équipe EPITA Assistants**
-- Pour toute question, contactez : [assistants@tickets.assistants.epita.fr](mailto:assistants@tickets.assistants.epita.fr)
-
+- **nassim.berkhli**
+- **nathan.godin**
+- **ramanpreet.singh**
+- **emmanuel.liguori**
+- **ales.abdi**
 ---
 
 ## Références
