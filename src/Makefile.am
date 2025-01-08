@@ -1,5 +1,6 @@
 SUBDIRS = lexer \
-          io
+          io \
+          parser
 
 bin_PROGRAMS = 42sh
 
@@ -13,5 +14,6 @@ nobase_include_HEADERS = main.h
 
 42sh_LDADD =  \
        lexer/liblexer.a \
-       io/libio.a
+       io/libio.a \
+       parser/libparser.a
 

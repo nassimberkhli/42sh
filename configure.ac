@@ -26,6 +26,7 @@ AC_CONFIG_FILES([
                     src/Makefile
                     src/lexer/Makefile
                     src/io/Makefile
+                    src/parser/Makefile
                     tests/Makefile
                 ])
 AC_OUTPUT

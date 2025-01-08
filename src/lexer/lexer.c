@@ -56,6 +56,8 @@ struct token *lexer(FILE *input)
     char *word = calloc(1, sizeof(char) * 1);
     while (c == ' ')
         c = fgetc(input);
+    if (c == EOF)
+        return NULL;
     //definition
     while (c != EOF)
     {
