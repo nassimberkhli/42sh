@@ -15,6 +15,7 @@ enum ast_type
 };
 
 struct ast *parser(FILE* input);
+void free_ast(struct ast *ast);
 
 struct ast
 {

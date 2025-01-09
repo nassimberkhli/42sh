@@ -4,7 +4,7 @@
 #include "lexer.h"
 
 #define SIZE_DICO 15
-// create token
+// init token
 static struct token *init_tok()
 {
     struct token *tok = malloc(sizeof(struct token));
@@ -22,7 +22,7 @@ static char* create_word(char *word, char c)
     word[size] = '\0'; 
     return word;
 }
-
+// create token
 struct token *create_tok(char *word)
 {
     struct token *tok = init_tok();
@@ -35,10 +35,12 @@ struct token *create_tok(char *word)
     
     for (int i = 0 ; i!= SIZE_DICO;i++)
     {
+        // compare if word equal to a no WORD token
         if (!strcmp(word, dicoToken[i].value))
         {
             tok->type = dicoToken[i].type;
             tok->value = dicoToken[i].value;
+            free(word);
             return tok;
         }
     }
@@ -57,7 +59,10 @@ struct token *lexer(FILE *input)
     while (c == ' ')
         c = fgetc(input);
     if (c == EOF)
+    {
+        free(word);
         return NULL;
+    }
     //definition
     while (c != EOF)
     {
@@ -72,6 +77,5 @@ struct token *lexer(FILE *input)
         word = create_word(word, c);
     
     struct token *tok = create_tok(word);
-    
     return tok;
 }
