@@ -1,8 +1,8 @@
 lib_LIBRARIES = liblecture.a
 
 liblecture_a_SOURCES =  \
-  io.c \
-  io.h
+  lecture.c \
+  lecture.h
 
 liblecture_a_CPPFLAGS = -I$(top_srcdir)/src
 

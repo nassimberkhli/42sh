@@ -8,4 +8,7 @@ libparser_a_CPPFLAGS = -I$(top_srcdir)/src
 
 libparser_a_CFLAGS = -Wall -Wextra -Werror -std=c99 -Wvla -pedantic
 
+libparser_a_LIBADD = $(top_builddir)/src/lexer/liblexer.a
+
 noinst_LIBRARIES = libparser.a
+

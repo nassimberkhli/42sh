@@ -14,7 +14,8 @@ nobase_include_HEADERS = main.h
 42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
 
 42sh_LDADD =  \
-       lexer/liblexer.a \
-       parser/libparser.a \
-       io/libio.a \
-       lecture/liblecture.a
+       $(top_builddir)/src/parser/libparser.a \
+       $(top_builddir)/src/lexer/liblexer.a \
+       $(top_builddir)/src/io/libio.a \
+       $(top_builddir)/src/lecture/liblecture.a
+

@@ -30,5 +30,8 @@ AC_CONFIG_FILES([
                     src/lecture/Makefile
                     tests/Makefile
                 ])
+
+AM_SILENT_RULES([no])
+
 AC_OUTPUT
 
