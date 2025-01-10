@@ -1,10 +1,27 @@
 #include "lecture.h"
 #include "../parser/parser.h"
+#include <sys/wait.h>
+#include <stdlib.h>
 
 void exec_command(char **data)
 {
     if (data && data[0])
-        execvp(data[0],data);
+    {
+        pid_t pid = fork();
+        if (pid == -1)
+        {
+            return;
+        }
+        if (pid == 0)
+        {
+            execvp(data[0], data);
+        }
+        else
+        {
+            int status;
+            waitpid(pid, &status, 0);
+        }
+    }
 }
 
 
@@ -12,7 +29,7 @@ void exec_command(char **data)
 
 void exec(struct ast *ast)
 {
-    int i = 0;
+    size_t i = 0;
     if (ast->type == AST_CMD)
     {
         exec_command(ast->data);
@@ -30,4 +47,5 @@ struct ast *lecture(FILE* input)
 {
     struct ast *ast = parser(input);
     exec(ast);
+    return ast;
 }

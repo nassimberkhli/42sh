@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "lexer.h"
 
-#define SIZE_DICO 15
+#define SIZE_DICO 16
 // init token
 static struct token *init_tok()
 {
@@ -40,7 +40,8 @@ struct token *create_tok(char *word)
         {
             tok->type = dicoToken[i].type;
             tok->value = dicoToken[i].value;
-            free(word);
+            if (dicoToken[i].type != END)
+                free(word);
             return tok;
         }
     }
@@ -61,7 +62,7 @@ struct token *lexer(FILE *input)
     if (c == EOF)
     {
         free(word);
-        return NULL;
+        return create_tok("EOF");
     }
     //definition
     while (c != EOF)
@@ -69,7 +70,11 @@ struct token *lexer(FILE *input)
         if (c != ' ' && c != '\n' && c != ';')
             word = create_word(word, c);
         else
+        {
+            if (strlen(word) > 0)
+                fseek(input, -1, SEEK_CUR);
             break;
+        }
         c = fgetc(input);
     }
     
