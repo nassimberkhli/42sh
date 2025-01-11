@@ -50,10 +50,6 @@ Ce document décrit comment configurer, utiliser et étendre **42sh**.
    ```bash
    make
    ```
-4. Installez :
-   ```bash
-   make install
-   ```
 
 ---
 
@@ -108,7 +104,7 @@ Ce fichier utilise la bibliothèque Criterion pour implémenter des tests unitai
    - Implémentez une suite de tests couvrant chaque fonctionnalité.
    - Comparez les résultats avec `bash --posix`.
 3. **Outils recommandés** :
-   - `valgrind` pour la détection de fuites mémoire.
+   - `valgrind` & `fsanitize=address` pour la détection de fuites mémoire.
    - `gdb` pour le débogage.
 
 ---
