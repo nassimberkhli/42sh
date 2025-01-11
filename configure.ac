@@ -16,9 +16,20 @@ AC_PROG_RANLIB
 # Check if a compiler is available for C
 AC_PROG_CC
 
+# Add optional sanitization flags
+AC_ARG_ENABLE([sanitize],
+    [AS_HELP_STRING([--enable-sanitize], [Enable AddressSanitizer flags for testing])],
+    [enable_sanitize=$enableval],
+    [enable_sanitize=no])
 
-# Check if a compiler has this list of flags
-AX_COMPILER_FLAGS([], [], [], [-Wall -Wextra -Werror -Wvla -pedantic -std=c99])
+if test "x$enable_sanitize" = "xyes"; then
+    SANITIZE_FLAGS="-fsanitize=address -g"
+    AC_DEFINE([ENABLE_SANITIZE], [1], [Enable AddressSanitizer])
+else
+    SANITIZE_FLAGS=""
+fi
+
+AC_SUBST(SANITIZE_FLAGS)
 
 # List Makefile in subdirectories
 AC_CONFIG_FILES([

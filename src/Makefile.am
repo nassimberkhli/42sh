@@ -12,7 +12,8 @@ nobase_include_HEADERS = main.h
 
 42sh_CPPFLAGS = -I%D%
 
-42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
+42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic $(SANITIZE_FLAGS)
+42sh_LDFLAGS = $(SANITIZE_FLAGS)
 
 42sh_LDADD =  \
        $(top_builddir)/src/parser/libparser.a \
@@ -20,3 +21,4 @@ nobase_include_HEADERS = main.h
        $(top_builddir)/src/io/libio.a \
        $(top_builddir)/src/lecture/liblecture.a \
        $(top_builddir)/src/builtin/libbuiltin.a
+

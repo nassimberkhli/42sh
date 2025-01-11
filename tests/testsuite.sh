@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./../src/42sh scriptTest.sh
+./../src/42sh -c "echo a"

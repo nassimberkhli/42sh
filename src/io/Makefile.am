@@ -5,7 +5,7 @@ libio_a_SOURCES =  \
   io.h
 
 libio_a_CPPFLAGS = -I$(top_srcdir)/src
-
-libio_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
+libio_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic $(SANITIZE_FLAGS)
 
 noinst_LIBRARIES = libio.a
+

@@ -5,8 +5,7 @@ liblexer_a_SOURCES =  \
   lexer.h
 
 liblexer_a_CPPFLAGS = -I$(top_srcdir)/src
-
-liblexer_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
+liblexer_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic $(SANITIZE_FLAGS)
 
 noinst_LIBRARIES = liblexer.a
 

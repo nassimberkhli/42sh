@@ -5,7 +5,7 @@ liblecture_a_SOURCES =  \
   lecture.h
 
 liblecture_a_CPPFLAGS = -I$(top_srcdir)/src
-
-liblecture_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
+liblecture_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic $(SANITIZE_FLAGS)
 
 noinst_LIBRARIES = liblecture.a
+
