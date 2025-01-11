@@ -23,7 +23,6 @@ Ce document décrit comment configurer, utiliser et étendre **42sh**.
 ```
 .
 ├── Makefile.am
-├── README.md
 ├── configure.ac
 ├── src
 │   ├── Makefile.am
