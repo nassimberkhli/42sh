@@ -1,4 +1,7 @@
 #include "lecture.h"
+
+#include <stddef.h>
+
 #include "../parser/parser.h"
 
 void exec_command(char **data)
@@ -12,7 +15,7 @@ void exec_command(char **data)
 
 void exec(struct ast *ast)
 {
-    int i = 0;
+    size_t i = 0;
     if (ast->type == AST_CMD)
     {
         exec_command(ast->data);
@@ -30,4 +33,5 @@ struct ast *lecture(FILE* input)
 {
     struct ast *ast = parser(input);
     exec(ast);
+    return ast;
 }

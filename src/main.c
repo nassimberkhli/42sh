@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     if (!input)
         return 1;
 
-    struct token *tok;
+    //struct token *tok;
     struct ast *ast = lecture(input);
     free_ast(ast);
     return 0;
