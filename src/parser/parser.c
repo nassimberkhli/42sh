@@ -20,56 +20,56 @@ static struct ast* ast_init()
 static void add_children(struct ast *ast)
 {
     ast->nb_children++;
-    ast->children[ast->nb_children - 1] = calloc(1, sizeof(struct ast));
+    ast->children[ast->nb_children - 1] = ast_init();
 }
 
 // create node command
-static void creation_command(struct ast *ast, struct token *tok, FILE *input)
+static void creation_command(struct ast *ast, struct token **tok, FILE *input)
 {
     ast->data= calloc(1, sizeof(char *));
-    ast->data[0] = tok->value;
-    tok = lexer(input);
+    ast->data[0] = (*tok)->value;
+    free(*tok);
+    *tok = lexer(input);
 
     int i = 2;
     // create the data of the node with all words in the command
-    while (tok && tok->type == WORDS)
+    while (tok && (*tok)->type == WORDS)
     {
         ast->data = realloc(ast->data, sizeof(char*) * i);
-        ast->data[i - 1] = tok->value;
-        free(tok);
-        tok = lexer(input);
+        ast->data[i - 1] = (*tok)->value;
+        free(*tok);
+        *tok = lexer(input);
         i++;
     }
 
     ast->data = realloc(ast->data, sizeof(char*) * i);
     ast->data[i - 1] = NULL;
+
 }
 
 //create ast 
 static void creation_ast(struct ast *ast, FILE* input)
 {
     struct token *tok;
-    while ((tok = lexer(input)))
+    tok = lexer(input);
+    while (tok && tok->type != END)
     {
         // tok WORDS
         if(tok->type == WORDS)
         {
             add_children(ast);
-            creation_command(ast->children[ast->nb_children - 1], tok,input);
+            creation_command(ast->children[ast->nb_children - 1], &tok,input);
             ast = ast->children[ast->nb_children - 1];
         }
         // if '/n' or ';' skip to another node
         if (tok->type == RET_LINE || tok->type == COMMA)
         {
-            while (tok->type == RET_LINE || tok->type == COMMA)
-            {
-                free(tok->value);
-                free(tok);
-                tok = lexer(input);
-            }
+            free(tok);
         }
-        free(tok);
+        tok = lexer(input);
     }
+    if (tok)
+        free(tok);
 }
 
 

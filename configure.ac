@@ -28,6 +28,7 @@ AC_CONFIG_FILES([
                     src/parser/Makefile
                     src/io/Makefile
                     src/lecture/Makefile
+                    src/builtin/Makefile
                     tests/Makefile
                 ])
 

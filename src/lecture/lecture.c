@@ -3,11 +3,28 @@
 #include <stddef.h>
 
 #include "../parser/parser.h"
+#include <sys/wait.h>
+#include <stdlib.h>
 
 void exec_command(char **data)
 {
     if (data && data[0])
-        execvp(data[0],data);
+    {
+        pid_t pid = fork();
+        if (pid == -1)
+        {
+            return;
+        }
+        if (pid == 0)
+        {
+            execvp(data[0], data);
+        }
+        else
+        {
+            int status;
+            waitpid(pid, &status, 0);
+        }
+    }
 }
 
 
