@@ -21,9 +21,39 @@ Ce document décrit comment configurer, utiliser et étendre **42sh**.
 
 ## Structure du Projet
 ```
-42sh/
-├── Makefile.am     # Fichier pour le système de build Autotools
-└── configure.ac    # Script de configuration
+.
+├── Makefile.am
+├── README.md
+├── configure.ac
+├── src
+│   ├── Makefile.am
+│   ├── builtin
+│   │   ├── Makefile.am
+│   │   ├── builtin.h
+│   │   └── builtin_true_false.c
+│   ├── io
+│   │   ├── Makefile.am
+│   │   ├── io.c
+│   │   └── io.h
+│   ├── lecture
+│   │   ├── Makefile.am
+│   │   ├── lecture.c
+│   │   └── lecture.h
+│   ├── lexer
+│   │   ├── Makefile.am
+│   │   ├── lexer.c
+│   │   └── lexer.h
+│   ├── main.c
+│   ├── main.h
+│   └── parser
+│       ├── Makefile.am
+│       ├── parser.c
+│       └── parser.h
+└── tests
+    ├── Makefile.am
+    ├── scriptTest.sh
+    ├── testsuite.sh
+    └── unittests.c
 ```
 
 ---
