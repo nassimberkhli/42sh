@@ -1,35 +1,18 @@
 #include "lecture.h"
-
-#include <stddef.h>
-
 #include "../parser/parser.h"
+#include "../builtin/echo.h"
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <string.h>
 
+//execute command of then ast
 void exec_command(char **data)
 {
-    if (data && data[0])
-    {
-        pid_t pid = fork();
-        if (pid == -1)
-        {
-            return;
-        }
-        if (pid == 0)
-        {
-            execvp(data[0], data);
-        }
-        else
-        {
-            int status;
-            waitpid(pid, &status, 0);
-        }
-    }
+	if (strcmp(data[0], "echo") == 0)
+		echo(data);
 }
 
-
-
-
+//read ast for execute it
 void exec(struct ast *ast)
 {
     size_t i = 0;
@@ -44,8 +27,7 @@ void exec(struct ast *ast)
     }
 }
 
-
-
+//??????????
 struct ast *lecture(FILE* input)
 {
     struct ast *ast = parser(input);
