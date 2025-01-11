@@ -26,5 +26,6 @@ struct ast
     char **data;
 };
 
+void print_ast(struct ast *ast, int depth);
 
 #endif /* ! PARSER_H */

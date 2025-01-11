@@ -1,18 +1,29 @@
 #include "main.h"
-#include "io/io.h"
-#include "lexer/lexer.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "io/io.h"
+#include "lexer/lexer.h"
 #include "parser/parser.h"
 #include "lecture/lecture.h"
 
+int print_steps = 0;
+
 int main(int argc, char **argv)
 {
+    if (argc > 1 && strcmp(argv[1], "-p") == 0)
+    {
+        print_steps = 1;
+        argc--;
+        argv++;
+    }
+
     FILE *input = io(argc, argv);
     if (!input)
         return 1;
 
-    //struct token *tok;
     struct ast *ast = lecture(input);
     free_ast(ast);
     return 0;

@@ -4,6 +4,9 @@
 #include "lexer.h"
 
 #define SIZE_DICO 16
+
+extern int print_steps;
+
 // init token
 static struct token *init_tok()
 {
@@ -55,16 +58,23 @@ struct token *create_tok(char *word)
 //main lex function
 struct token *lexer(FILE *input)
 {
+    if (print_steps)
+        printf("[lexer] Starting lexical analysis\n");
+
     char c = fgetc(input);
     char *word = calloc(1, sizeof(char) * 1);
+
     while (c == ' ')
         c = fgetc(input);
+
     if (c == EOF)
     {
         free(word);
+        if (print_steps)
+            printf("[lexer] End of file reached\n");
         return create_tok("EOF");
     }
-    //definition
+
     while (c != EOF)
     {
         if (c != ' ' && c != '\n' && c != ';')
@@ -77,10 +87,19 @@ struct token *lexer(FILE *input)
         }
         c = fgetc(input);
     }
-    
+
     if (strlen(word) <= 0 && c != ' ')
         word = create_word(word, c);
-    
+
     struct token *tok = create_tok(word);
+
+    if (print_steps)
+    {
+        printf("[lexer] Token created:\n");
+        printf("  Type: %d\n", tok->type);
+        printf("  Value: %s\n", tok->value);
+    }
+
     return tok;
 }
+
