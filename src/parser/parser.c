@@ -6,6 +6,7 @@
 #include "../lexer/lexer.h"
 
 extern int print_steps;
+static void one_creation_ast(struct ast *ast, FILE* input,struct token **tok);
 
 //initaliasation of an ast
 static struct ast *ast_init()
@@ -66,6 +67,59 @@ static void creation_command(struct ast *ast, struct token **tok, FILE *input)
     ast->data[i - 1] = NULL;
 }
 
+
+// static void creation_if(struct ast *ast, struct token **tok, FILE *input)
+// {
+//     ast->type = AST_IF;
+//     add_children(ast);
+//     struct token *tok = lexer(input);
+//     ast->children[0]->data = *tok;
+//     ast->children[0]->type = AST_CDT;
+//     *tok = lexer(input);
+//     add_children(ast);
+//     ast->children[1]->data = *tok;
+//     creation_then(ast->children[1]); //then
+//     int i = 2;
+//     while ((*tok)->type == ELIF)
+//     {
+//         add_children(ast);
+//         ast->children[i]->type = IF;
+//         ast->children[i]->data = tok;
+//         creation_if(ast->children[i],tok, input);
+//         i++;
+//     }
+//     if ((*tok)->type == ELSE)
+//     {
+//         add_children(ast);
+//         creation_then(ast->children[i]); //else
+//         i++;
+//     }
+//     add_children(ast); //next code
+//     creation_then(ast->children[i]);
+// }
+
+static void one_creation_ast(struct ast *ast, FILE* input,struct token **tok)
+{
+    // tok WORDS
+        if((*tok)->type == WORDS)
+        {
+            add_children(ast);
+            creation_command(ast->children[ast->nb_children - 1], tok,input);
+            ast = ast->children[ast->nb_children - 1];
+        }
+        // next tok can be IF, ... don't use lexer again or free(tok)
+
+        //tok IF
+        if ((*tok)->type == IF)
+        {
+            add_children(ast);
+            //creation_if(ast->children[ast->nb_children - 1], &tok,input);
+            ast = ast->children[ast->nb_children - 1];
+        }
+        free(*tok);
+        *tok = lexer(input);
+}
+
 //create ast 
 static void creation_ast(struct ast *ast, FILE* input)
 {
@@ -74,14 +128,7 @@ static void creation_ast(struct ast *ast, FILE* input)
     while (tok && tok->type != END)
     {
         // tok WORDS
-        if(tok->type == WORDS)
-        {
-            add_children(ast);
-            creation_command(ast->children[ast->nb_children - 1], &tok,input);
-            ast = ast->children[ast->nb_children - 1];
-        }
-        free(tok);
-        tok = lexer(input);
+        one_creation_ast(ast,input,&tok);
     }
     if (tok)
         free(tok);
