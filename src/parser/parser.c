@@ -39,7 +39,6 @@ static void creation_command(struct ast *ast, struct token **tok, FILE *input)
     if (print_steps)
         printf("[creation_command] Creating a command node\n");
 
-    ast->data = calloc(1, sizeof(char *));
     ast->data[0] = (*tok)->value;
 
     if (print_steps)
@@ -81,11 +80,7 @@ static void creation_ast(struct ast *ast, FILE* input)
             creation_command(ast->children[ast->nb_children - 1], &tok,input);
             ast = ast->children[ast->nb_children - 1];
         }
-        // if '/n' or ';' skip to another node
-        if (tok->type == RET_LINE || tok->type == COMMA)
-        {
-            free(tok);
-        }
+        free(tok);
         tok = lexer(input);
     }
     if (tok)
@@ -114,6 +109,7 @@ void free_ast(struct ast *ast)
     {
         free(ast->data[j]);
     }
+    free(ast->data[j]);
     free(ast->data);
     free(ast);
 }
