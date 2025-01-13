@@ -33,7 +33,7 @@ void echo_standard(char *argv, int flags)
 			else
 				putchar(argv[j]);
 		}
-	if ((flags % 2) == 1)
+	if ((flags % 2) == 0)
 		printf("\n");
 }
 
@@ -72,20 +72,19 @@ void echo_true(char **argv)
 
 void echo(char **argv)
 {
-	int i = 0;
+	int i = 2;
+	int j = 1;
 	if (argv[0] == NULL || argv[1] == NULL)
 		return;
 	else if (argv[1][0] == '-')
-		i = 2;
-	else
 	{
-		if (argv[2] == NULL)
-			return;
+		j = 2;
 		i = 3;
 	}
 	while(argv[i] != NULL)
 	{
-		strcat(argv[2], argv[i]);
+		strcat(argv[j], " ");
+		strcat(argv[j], argv[i]);
 		i++;
 	}
 	echo_true(argv);

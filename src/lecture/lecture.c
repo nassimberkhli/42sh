@@ -3,11 +3,15 @@
 #include <stddef.h>
 
 #include "../parser/parser.h"
+#include "../builtin/echo.c"
 #include <sys/wait.h>
 #include <stdlib.h>
 
+
 extern int print_steps;
 
+
+/*
 void exec_command(char **data)
 {
     if (print_steps)
@@ -42,6 +46,14 @@ void exec_command(char **data)
                 printf("[exec_command] Command exited with status: %d\n", status);
         }
     }
+}
+*/
+void exec_command(char **data)
+{
+	if (*data == NULL)
+		return;
+	if (strcmp(*data, "echo") == 0)
+		echo(data);
 }
 
 void exec(struct ast *ast)
