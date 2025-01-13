@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Tests
+
 if [ 3 -gt 2 ]; then
     echo "Test 1: Great work"
 fi
