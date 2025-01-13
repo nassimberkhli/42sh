@@ -2,7 +2,9 @@ lib_LIBRARIES = libbuiltin.a
 
 libbuiltin_a_SOURCES = \
   builtin_true_false.c \
-  builtin_true_false.h
+  builtin_true_false. \
+  echo.c \
+  echo.h
 
 libbuiltin_a_CPPFLAGS = -I$(top_srcdir)/src
 
