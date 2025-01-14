@@ -61,7 +61,7 @@ struct token *lexer(FILE *input)
     if (print_steps)
         printf("[lexer] Starting lexical analysis\n");
 
-    char c = fgetc(input);
+    int c = fgetc(input);
     char *word = calloc(1, sizeof(char) * 1);
 
     while (c == ' ')
