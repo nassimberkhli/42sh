@@ -1,0 +1,2 @@
+issou=haaaaaaaaaaaaaaaaaaaa;
+echo $issou
