@@ -25,6 +25,7 @@ void variable(char* data)
 		value = realloc(value, o + 1);
 		o++;
 	}
+	value[o] = '\0';
 	bool a = false;
 	hash_map_insert(hash_map, key, value, &a);
 }
