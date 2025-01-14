@@ -1,9 +1,11 @@
 #include "lecture.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #include "../parser/parser.h"
-#include "../builtin/echo.c"
+#include "../variable/variable.h"
+#include "../builtin/echo.h"
 #include <sys/wait.h>
 #include <stdlib.h>
 
@@ -53,7 +55,18 @@ void exec_command(char **data)
 	if (*data == NULL)
 		return;
 	if (strcmp(*data, "echo") == 0)
+	{
 		echo(data);
+		return;
+	}
+	for (size_t i = 0; i < strlen(data[0]) - 1; i++)
+	{
+		if (data[0][i] == '=')
+		{
+			variable(data[0]);
+			return;
+		}
+	}
 }
 
 void exec(struct ast *ast)

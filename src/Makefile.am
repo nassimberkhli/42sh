@@ -2,7 +2,8 @@ SUBDIRS = lexer \
           parser \
           io \
           lecture \
-	  builtin
+	      builtin \
+          variable
 
 bin_PROGRAMS = 42sh
 
@@ -20,5 +21,6 @@ nobase_include_HEADERS = main.h
        $(top_builddir)/src/lexer/liblexer.a \
        $(top_builddir)/src/io/libio.a \
        $(top_builddir)/src/lecture/liblecture.a \
-       $(top_builddir)/src/builtin/libbuiltin.a
+       $(top_builddir)/src/builtin/libbuiltin.a \
+       $(top_builddir)/src/variable/libvariable.a
 

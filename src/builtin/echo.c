@@ -1,4 +1,5 @@
 #include "echo.h"
+#include "../variable/variable.c"
 #include <stdio.h>
 #include <string.h>
 
@@ -6,33 +7,33 @@
 // 1 = -n et 2 = -e
 void echo_standard(char *argv, int flags)
 {
-		for (size_t j = 0; j < strlen(argv); j++)
+	for (size_t j = 0; j < strlen(argv); j++)
+	{
+		if (flags < 2)
 		{
-			if (flags < 2)
+			if (argv[j] == '\\' && j != strlen(argv))
 			{
-				if (argv[j] == '\\' && j != strlen(argv))
+				j++;
+				if (argv[j] == 'n')
 				{
-					j++;
-					if (argv[j] == 'n')
-					{
-						putchar('\n');
-					}
-					else if (argv[j] == 't')
-						putchar('\t');
-					else if (argv[j] == '\\')
-						putchar('\\');
-					else
-					{
-						j--;
-						putchar(argv[j]);	
-					}
+					putchar('\n');
 				}
+				else if (argv[j] == 't')
+					putchar('\t');
+				else if (argv[j] == '\\')
+					putchar('\\');
 				else
-					putchar(argv[j]);
+				{
+					j--;
+					putchar(argv[j]);	
+				}
 			}
 			else
 				putchar(argv[j]);
 		}
+		else
+			putchar(argv[j]);
+	}
 	if ((flags % 2) == 0)
 		printf("\n");
 }
@@ -76,7 +77,14 @@ void echo(char **argv)
 	int j = 1;
 	if (argv[0] == NULL || argv[1] == NULL)
 		return;
-	else if (argv[1][0] == '-')
+	int variable = 1; // begining to supprime when ast is vable compatible
+	while (argv[variable] != NULL)
+	{
+		if (argv[variable][0] == '$')
+			argv[variable] = get_variable(argv[variable]);
+		variable++;	
+	} // end to supprime
+	if (argv[1][0] == '-')
 	{
 		j = 2;
 		i = 3;

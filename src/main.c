@@ -8,11 +8,14 @@
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 #include "lecture/lecture.h"
+#include "variable/hash_map.h"
 
 int print_steps = 0;
+struct hash_map *hash_map = NULL;
 
 int main(int argc, char **argv)
 {
+	hash_map = hash_map_init(32);
     if (argc > 1 && strcmp(argv[1], "-p") == 0)
     {
         print_steps = 1;
