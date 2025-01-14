@@ -77,30 +77,15 @@ struct token *lexer(FILE *input)
 
     while (c != EOF)
     {
-		if (c == '/')
+		if (c == '#')
 		{
-			char a = fgetc(input);
-			if (a == '/')
+			while (c != '\n' && c != EOF)
 			{
-				while(c != '\n' && c != EOF)
-					c = fgetc(input);
-				if (strlen(word) <= 0 && c != ' ')
-        			word = create_word(word, c);
-				struct token *tok = create_tok(word);
-				return tok;
+				c = fgetc(input);
 			}
-			else if (a == '\n')
-			{	
-            	word = create_word(word, c);
-				if (strlen(word) > 0)
-                	fseek(input, -1, SEEK_CUR);
-            	break;
-			}
-			else
-			{	
-            	word = create_word(word, c);
-            	word = create_word(word, a);
-			}
+            if (strlen(word) > 0)
+                fseek(input, -1, SEEK_CUR);
+			break;
 		}
         else if (c != ' ' && c != '\n' && c != ';')
             word = create_word(word, c);
