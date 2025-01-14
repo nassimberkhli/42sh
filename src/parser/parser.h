@@ -6,8 +6,12 @@
 enum ast_type
 {
     AST_CMD,
+    AST_CONDITION,
+    AST_THEN,
+    AST_ELIF,
+    AST_ELSE,
     AST_IF,
-    AST_LIST,
+    AST_CDT,
     AST_WHILE,
     AST_UNTIL,
     AST_REDIR,

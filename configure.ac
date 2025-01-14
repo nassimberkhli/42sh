@@ -32,6 +32,7 @@ AC_CONFIG_FILES([
                     src/io/Makefile
                     src/lecture/Makefile
                     src/builtin/Makefile
+					src/variable/Makefile
                     tests/Makefile
                 ])
 
