@@ -21,6 +21,9 @@ static struct ast *ast_init()
     ast_tok->children = calloc(1, sizeof(struct ast *));
     ast_tok->data = calloc(1, sizeof(char *));
     ast_tok->type = AST_CMD;
+    
+    if (print_steps)
+        printf("[ast_init] AST node initialized with type: %d\n", ast_tok->type);
     return ast_tok;
 }
 
@@ -68,6 +71,11 @@ static void creation_command(struct ast *ast, struct token **tok, FILE *input)
     }
     ast->data = realloc(ast->data, sizeof(char *) * i);
     ast->data[i - 1] = NULL;
+
+    if (print_steps)
+    {
+        printf("[creation_command] Finished creating command node\n");
+    }
 }
 
 /*
@@ -102,9 +110,53 @@ static void creation_if(struct ast *ast, struct token **tok, FILE *input)
 }
 */
 
-// Handle Creation of AST-Token
-static void one_creation_ast(struct ast *ast, FILE* input, struct token **tok)
+static void creation_pipeline(struct ast *ast, FILE *input, struct token **tok)
 {
+    if (print_steps)
+    {
+        printf("[creation_pipeline] Creating a pipeline node\n");
+    }
+
+    ast->type = AST_PIPELINE;
+
+    struct token *current_tok = *tok;
+    while (current_tok && current_tok->type != END)
+    {
+        struct ast *cmd_ast = ast_init();
+        creation_command(cmd_ast, &current_tok, input);
+        add_children(ast, cmd_ast);
+
+        if (current_tok->type == PIPELINE)
+        {
+            free(current_tok);
+            current_tok = lexer(input);
+        }
+        else
+            break;
+    }
+    *tok = current_tok;
+
+    if (print_steps)
+    {
+        printf("[creation_pipeline] Finished creating pipeline node\n");
+    }
+}
+
+// Handle Creation of AST-Token
+static void one_creation_ast(struct ast *ast, FILE *input, struct token **tok)
+{
+    if (!*tok || (*tok)->type == END)
+    {
+        if (print_steps)
+            printf("[one_creation_ast] Reached END token, stopping\n");
+        return;
+    }
+
+    if (print_steps)
+    {
+        printf("[one_creation_ast] Processing token: Type=%d, Value=%s\n", (*tok)->type, (*tok)->value);
+    }
+
     if ((*tok)->type == WORDS)
     {
         struct ast *cmd_ast = ast_init();
@@ -117,6 +169,13 @@ static void one_creation_ast(struct ast *ast, FILE* input, struct token **tok)
         creation_if(if_ast, input, tok);
         add_children(ast, if_ast);
     }
+    else if ((*tok)->type == PIPELINE)
+    {
+        struct ast *pipeline_ast = ast_init();
+        creation_pipeline(pipeline_ast, input, tok);
+        add_children(ast, pipeline_ast);
+    }
+
     free(*tok);
     *tok = lexer(input);
 }
@@ -124,23 +183,43 @@ static void one_creation_ast(struct ast *ast, FILE* input, struct token **tok)
 // Function for IF condition
 static void creation_if(struct ast *ast, FILE* input, struct token **tok)
 {
+    if (print_steps)
+    {
+        printf("[creation_if] Starting 'if' condition creation\n");
+    }
+
     ast->type = AST_IF;
 
+    // Create and add the condition node
     struct ast *condition_ast = ast_init();
     condition_ast->type = AST_CONDITION;
     creation_command(condition_ast, tok, input);
     add_children(ast, condition_ast);
+
+    if (print_steps)
+    {
+        printf("[creation_if] Condition node added\n");
+    }
+
     *tok = lexer(input);
 
+    // Check for 'then' token
     if ((*tok)->type != THEN)
     {
-        fprintf(stderr, "Error: Missing 'then'\n");
+        fprintf(stderr, "Error: Missing 'then' after 'if'\n");
         exit(EXIT_FAILURE);
     }
 
+    if (print_steps)
+    {
+        printf("[creation_if] 'then' token detected\n");
+    }
+
+    // Create and add the 'then' node
     struct ast *then_ast = ast_init();
     then_ast->type = AST_THEN;
     *tok = lexer(input);
+
     while (*tok && (*tok)->type != ELSE && (*tok)->type != ELIF && (*tok)->type != FI)
     {
         creation_command(then_ast, tok, input);
@@ -148,46 +227,89 @@ static void creation_if(struct ast *ast, FILE* input, struct token **tok)
     }
     add_children(ast, then_ast);
 
-    // Handle ELIF
+    if (print_steps)
+    {
+        printf("[creation_if] 'then' block added\n");
+    }
+
+    // Handle 'elif' blocks
     while (*tok && (*tok)->type == ELIF)
     {
+        if (print_steps)
+        {
+            printf("[creation_if] 'elif' token detected\n");
+        }
+
         struct ast *elif_ast = ast_init();
         elif_ast->type = AST_ELIF;
         *tok = lexer(input);
         creation_if(elif_ast, input, tok);
         add_children(ast, elif_ast);
+
+        if (print_steps)
+        {
+            printf("[creation_if] 'elif' block added\n");
+        }
     }
 
-    // Handle ELSE
+    // Handle 'else' block
     if (*tok && (*tok)->type == ELSE)
     {
+        if (print_steps)
+        {
+            printf("[creation_if] 'else' token detected\n");
+        }
+
         struct ast *else_ast = ast_init();
         else_ast->type = AST_ELSE;
         *tok = lexer(input);
+
         while (*tok && (*tok)->type != FI)
         {
             creation_command(else_ast, tok, input);
             *tok = lexer(input);
         }
         add_children(ast, else_ast);
+
+        if (print_steps)
+        {
+            printf("[creation_if] 'else' block added\n");
+        }
     }
 
+    // Ensure the 'fi' token is present
     if (!*tok)
     {
-        fprintf(stderr, "Error: unexpected end of input\n");
+        fprintf(stderr, "Error: Unexpected end of input while parsing 'if'\n");
         exit(EXIT_FAILURE);
     }
     if ((*tok)->type != FI)
     {
-        fprintf(stderr, "Error: Missing 'fi'\n");
+        fprintf(stderr, "Error: Missing 'fi' to close 'if'\n");
         exit(EXIT_FAILURE);
     }
+
+    if (print_steps)
+    {
+        printf("[creation_if] 'fi' token detected, completing 'if' block\n");
+    }
+
     *tok = lexer(input);
+
+    if (print_steps)
+    {
+        printf("[creation_if] Finished 'if' condition creation\n");
+    }
 }
 
 // Create AST
-static void creation_ast(struct ast *ast, FILE* input)
+static void creation_ast(struct ast *ast, FILE *input)
 {
+    if (print_steps)
+    {
+        printf("[creation_ast] Starting AST creation\n");
+    }
+
     struct token *tok = lexer(input);
     while (tok && tok->type != END)
     {
@@ -197,31 +319,60 @@ static void creation_ast(struct ast *ast, FILE* input)
     {
         free(tok);
     }
+
+    if (print_steps)
+    {
+        printf("[creation_ast] Finished AST creation\n");
+    }
 }
 
-// Main Function that call the Real MAIN
-struct ast *parser(FILE* input)
+// Main Function that calls the Real MAIN
+struct ast *parser(FILE *input)
 {
+    if (print_steps)
+    {
+        printf("[parser] Starting parsing process\n");
+    }
+
     struct ast *ast_tok = ast_init();
     creation_ast(ast_tok, input);
+
+    if (print_steps)
+    {
+        printf("[parser] Parsing process complete\n");
+    }
+
     return ast_tok;
 }
 
 // Free the AST
 void free_ast(struct ast *ast)
 {
+    if (!ast)
+        return;
+
+    if (print_steps)
+    {
+        printf("[free_ast] Freeing AST node of type: %d\n", ast->type);
+    }
+
     for (size_t i = 0; i != ast->nb_children; i++)
     {
-        free_ast(ast->children[i]);
+        if (ast->children[i])
+            free_ast(ast->children[i]);
     }
     free(ast->children);
+
     int j = 0;
-    for (j = 0; ast->data[j]; j++)
-    {	if (strcmp(ast->data[j], "0") != 0)
-        	free(ast->data[j]);
+    while (ast->data && ast->data[j])
+    {
+        free(ast->data[j]);
+        j++;
     }
-    free(ast->data[j]);
-    free(ast->data);
+    if (ast->data)
+    {
+        free(ast->data);
+    }
     free(ast);
 }
 
@@ -232,6 +383,7 @@ void print_ast(struct ast *ast, int depth)
     {
         return;
     }
+
     for (int i = 0; i < depth; i++)
     {
         printf("  ");

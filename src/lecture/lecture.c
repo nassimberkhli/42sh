@@ -1,14 +1,13 @@
 #include "lecture.h"
 
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-#include "../parser/parser.h"
 #include "../variable/variable.h"
 #include "../builtin/echo.h"
-#include <sys/wait.h>
-#include <stdlib.h>
-
 
 extern int print_steps;
 
@@ -50,24 +49,6 @@ void exec_command(char **data)
     }
 }
 */
-void exec_command(char **data)
-{
-	if (*data == NULL)
-		return;
-	if (strcmp(*data, "echo") == 0)
-	{
-		echo(data);
-		return;
-	}
-	for (size_t i = 0; i < strlen(data[0]) - 1; i++)
-	{
-		if (data[0][i] == '=')
-		{
-			variable(data);
-			return;
-		}
-	}
-}
 
 void exec(struct ast *ast)
 {
@@ -91,6 +72,84 @@ void exec(struct ast *ast)
         {
             exec(ast->children[i]);
             i++;
+        }
+    }
+    else if (ast->type == AST_PIPELINE)
+        exec_pipeline(ast);
+}
+
+void exec_pipeline(struct ast *pipeline_ast)
+{
+    if (!pipeline_ast || pipeline_ast->type != AST_PIPELINE)
+        return;
+
+    int pipefd[2];
+    int prev_fd = -1;
+    pid_t pid;
+
+    for (size_t i = 0; i < pipeline_ast->nb_children; i++)
+    {
+        if (i < pipeline_ast->nb_children - 1)
+        {
+            if (pipe(pipefd) == -1)
+                exit(EXIT_FAILURE);
+        }
+
+        pid = fork();
+        if (pid == -1)
+            exit(EXIT_FAILURE);
+
+        if (pid == 0)
+        {
+            if (prev_fd != -1)
+            {
+                dup2(prev_fd, STDIN_FILENO);
+                close(prev_fd);
+            }
+
+            if (i < pipeline_ast->nb_children - 1)
+            {
+                dup2(pipefd[1], STDOUT_FILENO);
+                close(pipefd[1]);
+            }
+
+            close(pipefd[0]);
+            exec(pipeline_ast->children[i]);
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            waitpid(pid, NULL, 0);
+
+            if (prev_fd != -1)
+                close(prev_fd);
+
+            if (i < pipeline_ast->nb_children - 1)
+            {
+                close(pipefd[1]);
+                prev_fd = pipefd[0];
+            }
+        }
+    }
+}
+
+void exec_command(char **data)
+{
+     if (!data || !*data)
+        return;
+
+    if (strcmp(*data, "echo") == 0)
+    {
+        echo(data);
+        return;
+    }
+
+    for (size_t i = 0; i < strlen(data[0]) - 1; i++)
+    {
+        if (data[0][i] == '=')
+        {
+            variable(data);
+            return;
         }
     }
 }

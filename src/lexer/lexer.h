@@ -21,6 +21,7 @@ enum token_type
     WORDS,
     REDIR,
     APP,
+    PIPELINE,
     END
 };
 

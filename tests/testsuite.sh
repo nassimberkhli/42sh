@@ -35,5 +35,5 @@ for file in "../tests/liste_test"/*; do
 done
 
 echo ---------------------------------
-echo Number of test passed $reussite / 19
+echo Number of test passed $reussite / 20
 echo ---------------------------------

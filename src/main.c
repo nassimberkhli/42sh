@@ -16,8 +16,8 @@ struct hash_map *hash_map = NULL;
 
 int main(int argc, char **argv)
 {
-	hash_map = hash_map_init(32);
-	special_variable();
+    hash_map = hash_map_init(32);
+    // special_variable();
     if (argc > 1 && strcmp(argv[1], "-p") == 0)
     {
         print_steps = 1;

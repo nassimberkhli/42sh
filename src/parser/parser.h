@@ -15,6 +15,7 @@ enum ast_type
     AST_WHILE,
     AST_UNTIL,
     AST_REDIR,
+    AST_PIPELINE,
     AST_APP
 };
 

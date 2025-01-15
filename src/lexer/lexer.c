@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "lexer.h"
 
-#define SIZE_DICO 16
+#define SIZE_DICO 17
 
 extern int print_steps;
 
@@ -34,7 +34,7 @@ struct token *create_tok(char *word)
         {
             char *value;
             enum token_type type;
-        } dicoToken[] = {{"if", IF}, {"fi", FI}, {"then", THEN}, {"elif", ELIF}, {"else", ELSE}, {";", COMMA}, {"\n", RET_LINE}, {"for", FOR}, {"while", WHILE}, {"until", UNTIL}, {"do", DO}, {"done", DONE}, {"'", QUOTE}, {">", REDIR}, {">>", APP}, {"EOF", END}};
+        } dicoToken[] = {{"if", IF}, {"fi", FI}, {"then", THEN}, {"elif", ELIF}, {"else", ELSE}, {";", COMMA}, {"\n", RET_LINE}, {"for", FOR}, {"while", WHILE}, {"until", UNTIL}, {"do", DO}, {"done", DONE}, {"'", QUOTE}, {">", REDIR}, {">>", APP}, {"|", PIPELINE}, {"EOF", END}};
     
     for (int i = 0 ; i!= SIZE_DICO;i++)
     {
