@@ -217,8 +217,8 @@ void free_ast(struct ast *ast)
     free(ast->children);
     int j = 0;
     for (j = 0; ast->data[j]; j++)
-    {
-        free(ast->data[j]);
+    {	if (strcmp(ast->data[j], "0") != 0)
+        	free(ast->data[j]);
     }
     free(ast->data[j]);
     free(ast->data);

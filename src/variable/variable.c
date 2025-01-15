@@ -7,6 +7,12 @@
 
 extern struct hash_map *hash_map;
 
+void special_variable()
+{
+	bool a = false;
+	hash_map_insert(hash_map, "?", "0", &a);
+}
+
 void variable_calcul(char* value)
 {
 	size_t i = 0;
