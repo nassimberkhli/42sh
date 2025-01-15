@@ -1,31 +1,86 @@
 #include "hash_map.h"
 #include "variable.h"
+#include "my_itoa.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 
 extern struct hash_map *hash_map;
 
-void variable(char* data)
+void variable_calcul(char* value)
+{
+	size_t i = 0;
+	while (value[i] != ' ')
+		i++;
+	char *value_2 = malloc(2);
+	size_t a = 3;
+	for (; value[a] != ' '; a++)
+	{
+		value_2[a - 3] = value[a];
+		value_2 = realloc(value_2, a - 2);
+	}
+	value_2[a - 2] = '\0';
+	char c = ' ';
+	while (value[a] == ' ')
+		a++;
+	size_t b = a + 1;
+	while (value[b] == ' ')
+		b++;
+	c = value[a];
+	char *value_3 = malloc(2);
+	size_t indice = 0;
+	for (; value[b] != ')'; b++)
+	{
+		value_3[indice] = value[b];
+		value_3 = realloc(value_3, indice + 1);
+		indice++;
+	}
+	value_3[indice] = '\0';
+	if (c == '+')
+		value = my_itoa(atoi(value_2) + atoi(value_3), value);
+	if (c == '-')
+		value = my_itoa(atoi(value_2) - atoi(value_3), value);
+	if (c == '*')
+		value = my_itoa(atoi(value_2) * atoi(value_3), value);
+	if (c == '/')
+		value = my_itoa(atoi(value_2) / atoi(value_3), value);
+	if (c == '%')
+		value = my_itoa(atoi(value_2) % atoi(value_3), value);
+	free(value_2);
+	free(value_3);
+}
+
+void variable(char** data)
 {
 	char* key = malloc(1);
 	size_t i = 0;
-	for (; data[i] != '=' ; i++)
+	for (; data[0][i] != '=' ; i++)
 	{
-		key[i] = data[i];
+		key[i] = data[0][i];
 		key = realloc(key, i + 1);
 	}
 	i++;
 	key[i - 1] = '\0';
 	char* value = malloc(2);
 	size_t o = 0;
-	for (; i < strlen(data) ; i++)
+	for (; i < strlen(data[0]) ; i++)
 	{
-		value[o] = data[i];
+		value[o] = data[0][i];
 		value = realloc(value, o + 1);
 		o++;
 	}
 	value[o] = '\0';
+	if (value[0] == '$')
+	{
+		int i = 1;
+		while (data[i] != NULL)
+		{
+			value = strcat(value, " ");
+			value = strcat(value, data[i]);
+			i++;
+		}
+		variable_calcul(value);
+	}
 	bool a = false;
 	hash_map_insert(hash_map, key, value, &a);
 }

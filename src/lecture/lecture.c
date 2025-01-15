@@ -63,7 +63,7 @@ void exec_command(char **data)
 	{
 		if (data[0][i] == '=')
 		{
-			variable(data[0]);
+			variable(data);
 			return;
 		}
 	}
