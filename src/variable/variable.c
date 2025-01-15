@@ -71,15 +71,20 @@ void variable(char** data)
 	}
 	value[o] = '\0';
 	if (value[0] == '$')
-	{
-		int i = 1;
-		while (data[i] != NULL)
+	{	
+		if (value[1] == '(')
 		{
-			value = strcat(value, " ");
-			value = strcat(value, data[i]);
-			i++;
+			int i = 1;
+			while (data[i] != NULL)
+			{
+				value = strcat(value, " ");
+				value = strcat(value, data[i]);
+				i++;
+			}
+			variable_calcul(value);
 		}
-		variable_calcul(value);
+		else
+			value = get_variable(value);
 	}
 	bool a = false;
 	hash_map_insert(hash_map, key, value, &a);
