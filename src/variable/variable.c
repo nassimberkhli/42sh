@@ -102,5 +102,7 @@ char *get_variable(char* data)
 	data2 = strcpy(data2, data + 1);
 	data = hash_map_get(hash_map, data2);
 	free(data2);
+	if (!data)
+        return "1";
 	return data;
 }
