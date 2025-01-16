@@ -1,16 +1,16 @@
 #include "lecture.h"
 
+#include <fcntl.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "../variable/variable.h"
 #include "../builtin/echo.h"
+#include "../variable/variable.h"
 
 extern int print_steps;
-
 
 /*
 void exec_command(char **data)
@@ -44,7 +44,8 @@ void exec_command(char **data)
             int status;
             waitpid(pid, &status, 0);
             if (print_steps)
-                printf("[exec_command] Command exited with status: %d\n", status);
+                printf("[exec_command] Command exited with status: %d\n",
+status);
         }
     }
 }
@@ -65,7 +66,12 @@ void exec(struct ast *ast)
         }
     }
 
-    if (ast->type == AST_CMD)
+    if (ast->type == AST_CMD && ast->children[0]
+        && ast->children[0]->type == AST_REDIR)
+    {
+        exec_redir(ast, 0);
+    }
+    else if (ast->type == AST_CMD)
     {
         exec_command(ast->data);
         while (i < ast->nb_children)
@@ -133,9 +139,25 @@ void exec_pipeline(struct ast *pipeline_ast)
     }
 }
 
+void exec_redir(struct ast *ast, int mode)
+{
+    char *file = ast->children[0]->data[0];
+    int fd = 0;
+    int saved_stdout = dup(STDOUT_FILENO);
+    if (mode == 0)
+        fd = open(file, O_CREAT | O_WRONLY, 0644);
+    else if (mode == 1)
+        fd = open(file, O_CREAT | O_WRONLY | O_APPEND, 0644);
+    dup2(fd, STDOUT_FILENO);
+    exec_command(ast->data);
+    fflush(stdout);
+    dup2(saved_stdout, STDOUT_FILENO);
+    close(fd);
+}
+
 void exec_command(char **data)
 {
-     if (!data || !*data)
+    if (!data || !*data)
         return;
 
     if (strcmp(*data, "echo") == 0)
@@ -154,7 +176,7 @@ void exec_command(char **data)
     }
 }
 
-struct ast *lecture(FILE* input)
+struct ast *lecture(FILE *input)
 {
     struct ast *ast = parser(input);
 

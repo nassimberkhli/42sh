@@ -1,13 +1,14 @@
-#include <stdlib.h>
+#include "parser.h"
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include "parser.h"
 #include "../lexer/lexer.h"
 
 extern int print_steps;
-static void one_creation_ast(struct ast *ast, FILE* input, struct token **tok);
-static void creation_if(struct ast *ast, FILE* input, struct token **tok);
+static void one_creation_ast(struct ast *ast, FILE *input, struct token **tok);
+static void creation_if(struct ast *ast, FILE *input, struct token **tok);
 
 // Initialisation of an AST
 static struct ast *ast_init()
@@ -21,9 +22,10 @@ static struct ast *ast_init()
     ast_tok->children = calloc(1, sizeof(struct ast *));
     ast_tok->data = calloc(1, sizeof(char *));
     ast_tok->type = AST_CMD;
-    
+
     if (print_steps)
-        printf("[ast_init] AST node initialized with type: %d\n", ast_tok->type);
+        printf("[ast_init] AST node initialized with type: %d\n",
+               ast_tok->type);
     return ast_tok;
 }
 
@@ -35,7 +37,8 @@ static void add_children(struct ast *ast, struct ast *child_ast)
         printf("[add_children] Adding a child to the AST node\n");
     }
     ast->nb_children++;
-    ast->children = realloc(ast->children, sizeof(struct ast *) * ast->nb_children);
+    ast->children =
+        realloc(ast->children, sizeof(struct ast *) * ast->nb_children);
     ast->children[ast->nb_children - 1] = child_ast;
 }
 
@@ -54,10 +57,22 @@ static void creation_command(struct ast *ast, struct token **tok, FILE *input)
     }
     free(*tok);
     *tok = lexer(input);
-
     int i = 2;
-    while (*tok && (*tok)->type == WORDS)
+    while ((*tok && (*tok)->type == WORDS) || (*tok)->type == REDIR)
     {
+        if ((*tok)->type == REDIR)
+        {
+            ast->data = realloc(ast->data, sizeof(char *) * i);
+            ast->data[i - 1] = NULL;
+            struct ast *redir_ast = ast_init();
+            redir_ast->type = AST_REDIR;
+            redir_ast->data[0] = (*tok)->value;
+            add_children(ast, redir_ast);
+            free(*tok);
+            *tok = lexer(input);
+            ast = ast->children[ast->nb_children - 1];
+            i = 1;
+        }
         ast->data = realloc(ast->data, sizeof(char *) * i);
         ast->data[i - 1] = (*tok)->value;
 
@@ -154,7 +169,8 @@ static void one_creation_ast(struct ast *ast, FILE *input, struct token **tok)
 
     if (print_steps)
     {
-        printf("[one_creation_ast] Processing token: Type=%d, Value=%s\n", (*tok)->type, (*tok)->value);
+        printf("[one_creation_ast] Processing token: Type=%d, Value=%s\n",
+               (*tok)->type, (*tok)->value);
     }
 
     if ((*tok)->type == WORDS)
@@ -181,7 +197,7 @@ static void one_creation_ast(struct ast *ast, FILE *input, struct token **tok)
 }
 
 // Function for IF condition
-static void creation_if(struct ast *ast, FILE* input, struct token **tok)
+static void creation_if(struct ast *ast, FILE *input, struct token **tok)
 {
     if (print_steps)
     {
@@ -220,7 +236,8 @@ static void creation_if(struct ast *ast, FILE* input, struct token **tok)
     then_ast->type = AST_THEN;
     *tok = lexer(input);
 
-    while (*tok && (*tok)->type != ELSE && (*tok)->type != ELIF && (*tok)->type != FI)
+    while (*tok && (*tok)->type != ELSE && (*tok)->type != ELIF
+           && (*tok)->type != FI)
     {
         creation_command(then_ast, tok, input);
         *tok = lexer(input);

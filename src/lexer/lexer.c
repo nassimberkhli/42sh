@@ -1,9 +1,10 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "lexer.h"
 
-#define SIZE_DICO 17
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define SIZE_DICO 18
 
 extern int print_steps;
 
@@ -13,16 +14,15 @@ static struct token *init_tok()
     struct token *tok = malloc(sizeof(struct token));
     tok->value = NULL;
     return tok;
-} 
-
+}
 
 // create word by combine characters
-static char* create_word(char *word, char c)
+static char *create_word(char *word, char c)
 {
     int size = strlen(word) + 1;
     word = realloc(word, size + 1);
-    word[size- 1] = c;
-    word[size] = '\0'; 
+    word[size - 1] = c;
+    word[size] = '\0';
     return word;
 }
 // create token
@@ -31,12 +31,17 @@ struct token *create_tok(char *word)
     struct token *tok = init_tok();
 
     struct
-        {
-            char *value;
-            enum token_type type;
-        } dicoToken[] = {{"if", IF}, {"fi", FI}, {"then", THEN}, {"elif", ELIF}, {"else", ELSE}, {";", COMMA}, {"\n", RET_LINE}, {"for", FOR}, {"while", WHILE}, {"until", UNTIL}, {"do", DO}, {"done", DONE}, {"'", QUOTE}, {">", REDIR}, {">>", APP}, {"|", PIPELINE}, {"EOF", END}};
-    
-    for (int i = 0 ; i!= SIZE_DICO;i++)
+    {
+        char *value;
+        enum token_type type;
+    } dicoToken[] = { { "if", IF },       { "fi", FI },      { "then", THEN },
+                      { "elif", ELIF },   { "else", ELSE },  { ";", COMMA },
+                      { "\n", RET_LINE }, { "for", FOR },    { "while", WHILE },
+                      { "until", UNTIL }, { "do", DO },      { "done", DONE },
+                      { "'", QUOTE },     { ">", REDIR },    { ">|", REDIR },
+                      { ">>", APP },      { "|", PIPELINE }, { "EOF", END } };
+
+    for (int i = 0; i != SIZE_DICO; i++)
     {
         // compare if word equal to a no WORD token
         if (!strcmp(word, dicoToken[i].value))
@@ -48,14 +53,13 @@ struct token *create_tok(char *word)
             return tok;
         }
     }
-    
+
     tok->type = WORDS;
     tok->value = word;
     return tok;
 }
 
-
-//main lex function
+// main lex function
 struct token *lexer(FILE *input)
 {
     if (print_steps)
@@ -75,21 +79,21 @@ struct token *lexer(FILE *input)
     }
     while (c != EOF)
     {
-		if (c == '#')
-		{
-			while (c != '\n' && c != EOF)
-			{
-				c = fgetc(input);
-			}
+        if (c == '#')
+        {
+            while (c != '\n' && c != EOF)
+            {
+                c = fgetc(input);
+            }
             if (strlen(word) > 0)
                 fseek(input, -1, SEEK_CUR);
-			break;
-		}
+            break;
+        }
         else if (c == '\'')
         {
-            while (c != '\''  && c != EOF)
+            while (c != '\'' && c != EOF)
             {
-                word = create_word(word,c);
+                word = create_word(word, c);
                 c = fgetc(input);
             }
         }
@@ -118,4 +122,3 @@ struct token *lexer(FILE *input)
 
     return tok;
 }
-
