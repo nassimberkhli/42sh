@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include <stddef.h>
+#include <stdio.h>
 
 enum ast_type
 {

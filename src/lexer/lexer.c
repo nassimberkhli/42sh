@@ -97,7 +97,7 @@ struct token *lexer(FILE *input)
                 c = fgetc(input);
             }
         }
-        else if (c != ' ' && c != '\n' && c != ';')
+        else if (c != ' ' && c != '\n' && c != ';' && c != '>')
             word = create_word(word, c);
         else
         {
