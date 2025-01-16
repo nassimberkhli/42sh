@@ -98,6 +98,8 @@ void variable(char** data)
 
 char *get_variable(char* data)
 {
+	if (strcmp(data, "RANDOM") == 0)
+		return my_itoa(rand(), data);
 	char * data2 = malloc(strlen(data));
 	data2 = strcpy(data2, data + 1);
 	data = hash_map_get(hash_map, data2);
