@@ -7,6 +7,20 @@
 
 extern struct hash_map *hash_map;
 
+static void calcul_variable_ext(char * value, char * value_2, char * value_3, char c)
+{
+	if (c == '+')
+		value = my_itoa(atoi(value_2) + atoi(value_3), value);
+	if (c == '-')
+		value = my_itoa(atoi(value_2) - atoi(value_3), value);
+	if (c == '*')
+		value = my_itoa(atoi(value_2) * atoi(value_3), value);
+	if (c == '/')
+		value = my_itoa(atoi(value_2) / atoi(value_3), value);
+	if (c == '%')
+		value = my_itoa(atoi(value_2) % atoi(value_3), value);
+}
+
 void special_variable()
 {
 	bool a = false;
@@ -31,7 +45,7 @@ void variable_calcul(char* value)
 	if (value_2[0] == '$')
 	{
 		free_1 = 1;
-		value_2 = get_variable(value_2 + 1);
+		value_2 = get_variable(value_2);
 	}
 	char c = ' ';
 	while (value[a] == ' ')
@@ -52,18 +66,9 @@ void variable_calcul(char* value)
 	if (value_3[0] == '$')
 	{
 		free_2 = 1;
-		value_3 = get_variable(value_3 + 1);
+		value_3 = get_variable(value_3);
 	}
-	if (c == '+')
-		value = my_itoa(atoi(value_2) + atoi(value_3), value);
-	if (c == '-')
-		value = my_itoa(atoi(value_2) - atoi(value_3), value);
-	if (c == '*')
-		value = my_itoa(atoi(value_2) * atoi(value_3), value);
-	if (c == '/')
-		value = my_itoa(atoi(value_2) / atoi(value_3), value);
-	if (c == '%')
-		value = my_itoa(atoi(value_2) % atoi(value_3), value);
+	calcul_variable_ext(value, value_2, value_3, c);
 	if (free_1 == 0)
 		free(value_2);
 	if (free_2 == 0)
