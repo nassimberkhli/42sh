@@ -79,7 +79,12 @@ struct token *lexer(FILE *input)
     }
     while (c != EOF)
     {
-        if (c == '#')
+		if (c == '\\')
+		{
+			c = fgetc(input);
+            word = create_word(word, c);
+		}
+        else if (c == '#')
         {
             while (c != '\n' && c != EOF)
             {
