@@ -16,6 +16,8 @@ void special_variable()
 void variable_calcul(char* value)
 {
 	size_t i = 0;
+	int free_1 = 0;
+	int free_2 = 0;
 	while (value[i] != ' ')
 		i++;
 	char *value_2 = malloc(2);
@@ -26,6 +28,11 @@ void variable_calcul(char* value)
 		value_2 = realloc(value_2, a - 2);
 	}
 	value_2[a - 2] = '\0';
+	if (value_2[0] == '$')
+	{
+		free_1 = 1;
+		value_2 = get_variable(value_2 + 1);
+	}
 	char c = ' ';
 	while (value[a] == ' ')
 		a++;
@@ -42,6 +49,11 @@ void variable_calcul(char* value)
 		indice++;
 	}
 	value_3[indice] = '\0';
+	if (value_3[0] == '$')
+	{
+		free_2 = 1;
+		value_3 = get_variable(value_3 + 1);
+	}
 	if (c == '+')
 		value = my_itoa(atoi(value_2) + atoi(value_3), value);
 	if (c == '-')
@@ -52,8 +64,10 @@ void variable_calcul(char* value)
 		value = my_itoa(atoi(value_2) / atoi(value_3), value);
 	if (c == '%')
 		value = my_itoa(atoi(value_2) % atoi(value_3), value);
-	free(value_2);
-	free(value_3);
+	if (free_1 == 0)
+		free(value_2);
+	if (free_2 == 0)
+		free(value_3);
 }
 
 void variable(char** data)
