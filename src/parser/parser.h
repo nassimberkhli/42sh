@@ -15,7 +15,13 @@ enum ast_type
     AST_CDT,
     AST_WHILE,
     AST_UNTIL,
-    AST_REDIR,
+    AST_REDIR_OUT,
+    AST_REDIR_OUT_APP,
+    AST_REDIR_IN,
+    AST_REDIR_IN_APP,
+    AST_DUP_IN,
+    AST_DUP_OUT,
+    AST_OPEN_RW,
     AST_PIPELINE,
     AST_APP
 };

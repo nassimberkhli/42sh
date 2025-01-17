@@ -58,14 +58,27 @@ static void creation_command(struct ast *ast, struct token **tok, FILE *input)
     free(*tok);
     *tok = lexer(input);
     int i = 2;
-    while ((*tok && (*tok)->type == WORDS) || (*tok)->type == REDIR)
+    while (*tok && ((*tok)->type == WORDS || (*tok)->type == REDIR_OUT || (*tok)->type  == REDIR_OUT_APP || (*tok)->type == REDIR_IN || (*tok)->type == REDIR_IN_APP || (*tok)->type == DUP_IN || (*tok)->type == DUP_OUT || (*tok)->type == OPEN_RW))
     {
-        if ((*tok)->type == REDIR)
+        if ((*tok)->type == REDIR_OUT || (*tok)->type  == REDIR_OUT_APP || (*tok)->type == REDIR_IN || (*tok)->type == REDIR_IN_APP || (*tok)->type == DUP_IN || (*tok)->type == DUP_OUT || (*tok)->type == OPEN_RW)
         {
             ast->data = realloc(ast->data, sizeof(char *) * i);
             ast->data[i - 1] = NULL;
             struct ast *redir_ast = ast_init();
-            redir_ast->type = AST_REDIR;
+            if ((*tok)->type == REDIR_OUT)
+                redir_ast->type = AST_REDIR_OUT;
+            else if ((*tok)->type == REDIR_OUT_APP)
+                redir_ast->type = AST_REDIR_OUT_APP;
+            else if ((*tok)->type == REDIR_IN)
+                redir_ast->type = AST_REDIR_IN;
+            else if ((*tok)->type == REDIR_IN_APP)
+                redir_ast->type = AST_REDIR_IN_APP;
+            else if ((*tok)->type == DUP_IN)
+                redir_ast->type = AST_DUP_IN;
+            else if ((*tok)->type == DUP_OUT)
+                redir_ast->type = AST_DUP_OUT;
+            else if ((*tok)->type == OPEN_RW)
+                redir_ast->type = AST_OPEN_RW;
             redir_ast->data[0] = (*tok)->value;
             add_children(ast, redir_ast);
             free(*tok);

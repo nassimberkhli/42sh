@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SIZE_DICO 18
+#define SIZE_DICO 23
 
 extern int print_steps;
 
@@ -38,8 +38,10 @@ struct token *create_tok(char *word)
                       { "elif", ELIF },   { "else", ELSE },  { ";", COMMA },
                       { "\n", RET_LINE }, { "for", FOR },    { "while", WHILE },
                       { "until", UNTIL }, { "do", DO },      { "done", DONE },
-                      { "'", QUOTE },     { ">", REDIR },    { ">|", REDIR },
-                      { ">>", APP },      { "|", PIPELINE }, { "EOF", END } };
+                      { "'", QUOTE }, { ">", REDIR_OUT }, { ">|", REDIR_OUT },
+                      { ">>", REDIR_OUT_APP }, { "<", REDIR_IN }, { "<<", REDIR_IN_APP },
+                      {"<&", DUP_IN}, { ">&", DUP_OUT}, { "<>", OPEN_RW},
+                      { "|", PIPELINE }, { "EOF", END } };
 
     for (int i = 0; i != SIZE_DICO; i++)
     {
@@ -104,6 +106,18 @@ struct token *lexer(FILE *input)
         }
         else if (c != ' ' && c != '\n' && c != ';' && c != '>')
             word = create_word(word, c);
+        else if (strlen(word) == 0 && (c == '>' || c == '<'))
+        {
+            word = create_word(word, c);
+            c = fgetc(input);
+            if (c == '|' || c == '>' || c == '&' || c == '<')
+            {
+                word = create_word(word,c);
+                c = fgetc(input);
+            }
+                fseek(input, -1, SEEK_CUR);
+                break;
+        }
         else
         {
             if (strlen(word) > 0)
