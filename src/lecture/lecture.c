@@ -71,6 +71,11 @@ void exec(struct ast *ast)
     {
         exec_redir(ast, 0);
     }
+    if (ast->type == AST_CMD && ast->children[0]
+        && ast->children[0]->type == AST_REDIR_OUT_APP)
+    {
+        exec_redir(ast, 1);
+    }
     else if (ast->type == AST_CMD)
     {
         exec_command(ast->data);

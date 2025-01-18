@@ -55,7 +55,6 @@ struct token *create_tok(char *word)
             return tok;
         }
     }
-
     tok->type = WORDS;
     tok->value = word;
     return tok;

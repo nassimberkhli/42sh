@@ -19,6 +19,7 @@ enum token_type
     DONE,
     QUOTE,
     WORDS,
+    NUMBER_REDIR,
     REDIR_IN,
     REDIR_IN_APP,
     REDIR_OUT,
@@ -26,7 +27,6 @@ enum token_type
     DUP_IN,
     DUP_OUT,
     OPEN_RW,
-    APP,
     PIPELINE,
     END
 };
