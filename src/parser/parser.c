@@ -332,6 +332,47 @@ static void creation_if(struct ast *ast, FILE *input, struct token **tok)
     }
 }
 
+// Create OPERATOR
+static void creation_operator(struct ast *ast, FILE *input, struct token **tok)
+{
+    if (print_steps)
+    {
+        printf("[creation_operator] Creating operator node\n");
+    }
+
+    struct ast *oper_lt = ast_init();
+    creation_command(oper_lt, tok, input);
+    while (*tok && ((*tok)->type == AND || (*tok)->type == OR))
+    {
+        enum ast_type oper_tpe;
+        if ((*tok)->type == AND)
+        {
+            oper_tpe = AST_AND;
+        }
+        else if ((*tok)->type == OR)
+        {
+            oper_tpe = AST_OR;
+        }
+
+        struct ast *oper_ast = ast_init();
+        oper_ast->type = oper_tpe;
+        free(*tok);
+        *tok = lexer(input);
+
+        struct ast *oper_rt = ast_init();
+        creation_command(oper_rt, tok, input);
+        add_children(oper_ast, oper_lt);
+        add_children(oper_ast, oper_rt);
+        oper_lt = oper_ast;
+    }
+    *ast = *oper_lt;
+
+    if (print_steps)
+    {
+        printf("[creation_operator] Finished creating operator node\n");
+    }
+}
+
 // Create AST
 static void creation_ast(struct ast *ast, FILE *input)
 {
