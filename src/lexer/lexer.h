@@ -28,7 +28,9 @@ enum token_type
     DUP_OUT,
     OPEN_RW,
     PIPELINE,
-    END
+    END,
+    AND,
+    OR
 };
 
 
