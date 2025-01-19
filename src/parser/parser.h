@@ -23,7 +23,9 @@ enum ast_type
     AST_DUP_OUT,
     AST_OPEN_RW,
     AST_PIPELINE,
-    AST_APP
+    AST_APP,
+    AST_AND,    
+    AST_OR
 };
 
 struct ast *parser(FILE* input);
@@ -39,5 +41,6 @@ struct ast
 };
 
 void print_ast(struct ast *ast, int depth);
+void free_ast(struct ast *ast);
 
 #endif /* ! PARSER_H */
