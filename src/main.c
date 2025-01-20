@@ -29,8 +29,9 @@ int main(int argc, char **argv)
     if (!input)
         return 1;
 
-    struct ast *ast = lecture(input);
-    free_ast(ast);
+    int value = lecture(input);
+    if (value == 2)
+        return value;
     return atoi(get_variable("$?"));
 }
 

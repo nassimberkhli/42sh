@@ -51,10 +51,11 @@ status);
 }
 */
 
-void exec(struct ast *ast)
+int exec(struct ast *ast)
 {
     size_t i = 0;
-
+    int value = 0;
+    int val = 0;
     if (print_steps)
     {
         printf("[exec] Executing AST node:\n");
@@ -69,24 +70,42 @@ void exec(struct ast *ast)
     if (ast->type == AST_CMD && ast->children[0]
         && ast->children[0]->type == AST_REDIR_OUT)
     {
-        exec_redir(ast, 0);
+        exec_redir_out(ast, 0);
     }
-    if (ast->type == AST_CMD && ast->children[0]
+    else if (ast->type == AST_CMD && ast->children[0]
         && ast->children[0]->type == AST_REDIR_OUT_APP)
     {
-        exec_redir(ast, 1);
+        exec_redir_out(ast, 1);
+    }
+    else if (ast->type == AST_CMD && ast->children[0]
+        && ast->children[0]->type == AST_REDIR_IN)
+    {
+        exec_redir_in(ast);
     }
     else if (ast->type == AST_CMD)
     {
-        exec_command(ast->data);
-        while (i < ast->nb_children)
+        val = exec_command(ast->data);
+        if (val != 0)
         {
-            exec(ast->children[i]);
-            i++;
+            value = val;
+        }
+        else
+        {
+            while (i < ast->nb_children)
+            {
+                val = exec(ast->children[i]);
+                if (val != 0)
+                {
+                    value = val;
+                    break;
+                }
+                i++;
+            }
         }
     }
     else if (ast->type == AST_PIPELINE)
         exec_pipeline(ast);
+    return value;
 }
 
 void exec_pipeline(struct ast *pipeline_ast)
@@ -144,7 +163,7 @@ void exec_pipeline(struct ast *pipeline_ast)
     }
 }
 
-void exec_redir(struct ast *ast, int mode)
+void exec_redir_out(struct ast *ast, int mode)
 {
     char *file = ast->children[0]->data[0];
     int fd = 0;
@@ -160,28 +179,55 @@ void exec_redir(struct ast *ast, int mode)
     close(fd);
 }
 
-void exec_command(char **data)
+void exec_redir_in(struct ast *ast)
 {
+    char *file = ast->children[0]->data[0];
+    int fd = 0;
+    int saved_stdin = dup(0);
+    fd = open(file,O_RDONLY);
+    dup2(fd, 0);
+    close(fd);
+    exec_command(ast->data);
+    dup2(saved_stdin, 0);
+    close(saved_stdin);
+}
+
+int exec_command(char **data)
+{
+    int value = 0;
     if (!data || !*data)
-        return;
+        return 0;
 
     if (strcmp(*data, "echo") == 0)
     {
         echo(data);
-        return;
+        return 0;
     }
-
     for (size_t i = 0; i < strlen(data[0]) - 1; i++)
     {
         if (data[0][i] == '=')
         {
             variable(data);
-            return;
+            return 0;
         }
+    }
+    pid_t pid;
+    pid = fork();
+    if (pid == -1)
+        exit(EXIT_FAILURE);
+    else if (pid == 0)
+    {
+        execvp(data[0], data);
+    }
+    else // On est dans le parent
+    {
+        int status;
+        waitpid(pid, &status, 0);
+        return value;
     }
 }
 
-struct ast *lecture(FILE *input)
+int lecture(FILE *input)
 {
     struct ast *ast = parser(input);
 
@@ -190,7 +236,10 @@ struct ast *lecture(FILE *input)
         printf("Parsed AST:\n");
         print_ast(ast, 0);
     }
+    if (!ast)
+        return 2;
 
-    exec(ast);
-    return ast;
+    int value = exec(ast);
+    free_ast(ast);
+    return value;
 }
